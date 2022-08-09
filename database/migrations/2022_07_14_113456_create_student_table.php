@@ -19,6 +19,7 @@ class CreateStudentTable extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name')->nullable();
             $table->bigInteger('gr_no')->default('0');
+            $table->string('password')->nullable();
             $table->date('dob');
             $table->string('address')->nullable();
             $table->string('city')->nullable();
@@ -26,6 +27,7 @@ class CreateStudentTable extends Migration
             $table->string('country')->nullable();
             $table->string('zipcode')->nullable();
             $table->string('parent_contact_number')->nullable();
+            $table->string('parent_email')->nullable();
             $table->string('profie_pic')->nullable();
 
             $table->timestamps();

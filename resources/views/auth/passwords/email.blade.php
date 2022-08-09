@@ -59,7 +59,7 @@
             </div>
             <!-- /.login-card-body -->
         </div>
-    </div>
+    </div>    
     <!-- /.login-box -->
 
     <!-- jQuery -->

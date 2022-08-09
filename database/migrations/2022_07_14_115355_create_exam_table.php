@@ -16,8 +16,8 @@ class CreateExamTable extends Migration
         Schema::create('exam', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
-            $table->integer('standard_id');
-            $table->integer('subject_id');
+            $table->integer('standard_id')->default('0');
+            $table->integer('subject_id')->default('0');
             $table->date('date');
             $table->time('time');
             $table->string('duration')->nullable();

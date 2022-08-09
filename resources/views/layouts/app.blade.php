@@ -28,6 +28,9 @@
     <link rel="stylesheet" href="{{ asset("theme/plugins/summernote/summernote-bs4.min.css")}}">
     <!-- custom css -->
     <link rel="stylesheet" href="{{ asset("theme/dist/css/custom.css")}}">
+     <!-- Select2 -->
+  <link rel="stylesheet" href="{{asset("theme/plugins/select2/css/select2.min.css")}}">
+  <link rel="stylesheet" href="{{asset("theme/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css")}}">
 </head>
 
 <body>
@@ -82,6 +85,7 @@
     <script src="{{ asset("theme/dist/js/pages/dashboard.js")}}"></script>
     <!-- custom js -->
     <script src="{{ asset("theme/build/js/app.js")}}"></script>
+    <script src="{{asset("theme/plugins/select2/js/select2.full.min.js")}}"></script>
     @stack('scripts')
 
 </body>

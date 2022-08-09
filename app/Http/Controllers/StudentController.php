@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Mail;
+
 class StudentController extends Controller
 {
     /**
@@ -14,8 +16,9 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $data['students'] = Student::orderBy('id', 'desc')->paginate(5);
-        return view('student.index', $data);
+        // echo bcrypt('yash@123');
+        $students = Student::orderBy('id', 'desc')->paginate(3);
+        return view('students.index', compact('students'));
     }
 
     /**
@@ -25,7 +28,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('student.create');
+        return view('students.create');
     }
 
     /**
@@ -36,48 +39,61 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-       $request->validate([
-            'Fname' => 'required',
-            'Mname' => 'required',
-            'Lname' => 'required',
-            'GrNo' => 'required',
-            'DOB' => 'required',
-            'Address' => 'required',
-            'City' => 'required',
-            'State' => 'required',
-            'Country' => 'required',
-            'ZipCode' => 'required',
-            'ParentContactNumber' => 'required',
-            'ProfilePicture' => 'required'
+
+        $request->validate([
+            'first_name' => 'required',
+            'middle_name' => 'required',
+            'last_name' => 'required',
+            'gr_no' => 'required|min:6|max:8|unique:student',
+            'dob' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'zipcode' => 'required',
+            'parent_contact_number' => 'required',
+            'parent_email' => 'required',
+            'profile_pic' => 'required'
         ]);
-
-        $image = $request->file('ProfilePicture');
-        $new_name = rand() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('student/images'), $new_name);
-
+        // AfnrU!
+        $password = substr(str_shuffle("0123456789@#@!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6);
+        $image = $request->file('profile_pic');
+        $profile_pic = rand() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('student/images'), $profile_pic);
         $student = new Student;
-        $student->first_name = $request->Fname;
-        $student->middle_name = $request->Mname;
-        $student->last_name = $request->Lname;
-        $student->gr_no = $request->GrNo;
-        $student->dob = $request->DOB;
-        $student->address = $request->Address;
-        $student->city = $request->City;
-        $student->state = $request->State;
-        $student->country = $request->Country;
-        $student->zipcode = $request->ZipCode;
-        $student->parent_contact_number = $request->ParentContactNumber;
-        $student->profile_pic = $new_name;
+        $student->first_name = $request->first_name;
+        $student->middle_name = $request->middle_name;
+        $student->last_name = $request->last_name;
+        $student->gr_no = $request->gr_no;
+        $student->password = bcrypt($password);
+        $student->dob = $request->dob;
+        $student->address = $request->address;
+        $student->city = $request->city;
+        $student->state = $request->state;
+        $student->country = $request->country;
+        $student->zipcode = $request->zipcode;
+        $student->parent_contact_number = $request->parent_contact_number;
+        $student->parent_email = $request->parent_email;
+        $student->profile_pic = $profile_pic;
 
-        $student->save();
+        if ($student->save()) {
 
-        return redirect()->route('students.index');
-            
-    }
-    catch(Exception $e){
-        echo "<pre>";print_r($e->getMessage());
-    }
+            $data = [
+                'email' => $request->parent_email,
+                'password' => $password
+            ];
+
+            Mail::send('mails.student_account', $data, function ($message) use ($data) {
+                $message->to($data['email'])
+                    ->subject('Student Account created');
+            });
+
+            return redirect()->route('students.index')
+                ->with('success', 'student has been created successfully');
+        } else {
+            return redirect()->route('students.index')
+                ->with('error', 'something went wrong');
+        }
     }
 
     /**
@@ -88,7 +104,8 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        return view('student.show', compact('student'));
+        $student = Student::fine($id);
+        return view('students.show', compact('student'));
     }
 
     /**
@@ -99,9 +116,8 @@ class StudentController extends Controller
      */
     public function edit($id)
     {
-        $student= Student::find($id);
-        return view('student.edit', compact('student'));
-
+        $student = Student::find($id);
+        return view('students.edit', compact('student'));
     }
 
     /**
@@ -113,43 +129,45 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $request->validate([
-            'Fname' => 'required',
-            'Mname' => 'required',
-            'Lname' => 'required',
-            'GrNo' => 'required',
-            'DOB' => 'required',
-            'Address' => 'required',
-            'City' => 'required',
-            'State' => 'required',
-            'Country' => 'required',
-            'ZipCode' => 'required',
-            'ParentContactNumber' => 'required',
-            'ProfilePicture' => 'required'
+            'first_name' => 'required',
+            'middle_name' => 'required',
+            'last_name' => 'required',
+            'gr_no' => 'required|min:6|max:8|unique:student,gr_no,' . $id,
+            'dob' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'zipcode' => 'required',
+            'parent_contact_number' => 'required',
+            'parent_email' => 'required',
         ]);
-
-        $image = $request->file('ProfilePicture');
-        $new_name = rand() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('student/images'), $new_name);
-        
         $student = Student::find($id);
+        $profile_pic = !empty($student->profile_pic) ? $student->profile_pic : "";
+        if ($request->hasFile('ProfilePicture')) {
+            $image = $request->file('ProfilePicture');
+            $profile_pic = rand() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('student/images'), $profile_pic);
+        }
 
-        $student->first_name = $request->Fname;
-        $student->middle_name = $request->Mname;
-        $student->last_name = $request->Lname;
-        $student->gr_no = $request->GrNo;
-        $student->dob = $request->DOB;
-        $student->address = $request->Address;
-        $student->city = $request->City;
-        $student->state = $request->State;
-        $student->country = $request->Country;
-        $student->zipcode = $request->ZipCode;
-        $student->parent_contact_number = $request->ParentContactNumber;
-        $student->profile_pic = $new_name;
+        $student->first_name = $request->first_name;
+        $student->middle_name = $request->middle_name;
+        $student->last_name = $request->last_name;
+        $student->gr_no = $request->gr_no;
+        $student->dob = $request->dob;
+        $student->address = $request->address;
+        $student->city = $request->city;
+        $student->state = $request->state;
+        $student->country = $request->country;
+        $student->zipcode = $request->zipcode;
+        $student->parent_contact_number = $request->parent_contact_number;
+        $student->parent_email = $request->parent_email;
+        $student->profile_pic = $profile_pic;
         $student->save();
-       return redirect()->route('students.index');
-        
+        return redirect()->route('students.index')
+            ->with('success', 'students has been update successfully');
     }
 
     /**
@@ -161,7 +179,7 @@ class StudentController extends Controller
     public function destroy(student $student)
     {
         $student->delete();
-        return redirect()->route('students.index');
-    
-     }
+        return redirect()->route('students.index')
+            ->with('success', 'student has been deleted successfully');
+    }
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+ {{-- <?php  dd(bcrypt('nilesh@1102'))?>  --}}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,15 +27,15 @@
                 <p class="login-box-msg">Sign in to start your session</p>
 
                 @error('email')
-                   <div class="alert alert-danger">
-                        {{ $message }}
-                    </div>
+                <div class="alert alert-danger">
+                    {{ $message }}
+                </div>
                 @endif
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="input-group mb-3">
                         <input type="email" name="email" class="form-control" placeholder="Email">
-                       
+
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -50,7 +50,7 @@
                     <div class="input-group mb-3">
                         <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="current-password">
 
-                       
+
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -65,7 +65,7 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="icheck-primary">
-                               
+
                             </div>
                         </div>
                         <!-- /.col -->
@@ -78,9 +78,9 @@
 
                 <div class="social-auth-links text-center mb-3">
                     <p>- OR -</p>
-                    
-                    
-                    
+
+
+
                 </div>
                 <!-- /.social-auth-links -->
 

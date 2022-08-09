@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Subject;
+use Exception;
 
 use Illuminate\Http\Request;
 
@@ -25,7 +27,8 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        return view('subjects.create');
+        $subjects = Subject::all();
+        return view('subjects.create', compact('subjects'));
     }
 
     /**
@@ -39,12 +42,12 @@ class SubjectController extends Controller
         $request->validate([
             'name' => 'required'
         ]);
+
         $subject = new Subject;
         $subject->name = $request->name;
         $subject->save();
-        return redirect()->route('subjects.index');
-        
-
+        return redirect()->route('subjects.index')
+            ->with('success', 'subject has been created successfully');
     }
 
     /**
@@ -66,7 +69,7 @@ class SubjectController extends Controller
      */
     public function edit($id)
     {
-        $subject= Subject::find($id);
+        $subject = Subject::find($id);
         return view('subjects.edit', compact('subject'));
     }
 
@@ -79,15 +82,21 @@ class SubjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-           
+        //   try{
+
         $request->validate([
             'name' => 'required'
         ]);
+
         $subject = Subject::find($id);
         $subject->name = $request->name;
         $subject->save();
-        return redirect()->route('subjects.index');
-        
+
+        //   }catch(Exception $e){
+        //     echo $e->getMessage();
+        //   }
+        return redirect()->route('subjects.index')
+            ->with('success', 'subject has been update successfully');
     }
 
     /**
@@ -99,7 +108,7 @@ class SubjectController extends Controller
     public function destroy(subject $subject)
     {
         $subject->delete();
-        return redirect()->route('subjects.index');
-            
+        return redirect()->route('subjects.index')
+            ->with('success', 'subject has been delete succesfully');
     }
 }

@@ -1,26 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="row my-5">
-    <div class="col-12">
-        <div class="col-12">
-
-            <a href="{{route('subjects.create')}}" class="btn btn-success float-right"> Create new Subject</a>
-        </div>
-    </div>
-
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Subject Details</h3>
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
-                    <div class="input-group-append">
-                        </button>
+                <div class="input-group-append">
+        <a href="{{route('subjects.create')}}" class="btn btn-success float-right"> Create new Subject</a>
+                               
                     </div>
                 </div>
             </div>
         </div>
+        @if ($message = Session::get('success'))
+        <div class="alert alert-success">
+            <p>{{ $message }}</p>
+        </div>
+        @endif
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
             <table class="table table-hover text-nowrap">

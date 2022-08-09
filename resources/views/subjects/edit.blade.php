@@ -27,16 +27,27 @@
                             </button>
                         </div>
                     </div>
+                    @if(session('status'))
+                    <div class="mb-1 mt-1">
+                        {{ session('status') }}
+                    </div>
+                    @endif
                     <form action="{{ route('subjects.update',$subject->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="card-body">
                         <div class="form-group">
-                            <label for="name">Subject Name</label>
+                            <label for="name">Subject Name <span> *</span></label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ $subject->name }}">
+                            @error('name')
+                            <div class="mt-1 mb-1">
+                                <span class="validation-msg"> {{ $message }} </span>
+                              </div>
+                                @enderror
                         </div>
                         <div class="row">
                             <div class="col-12">
                                 <input type="submit" value="submit" class="btn btn-success float-right">
+                                <a class="btn btn-primary" href="{{ route('subjects.index') }}"> cancel</a>
                             </div>
                             @endsection
